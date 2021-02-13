@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
@@ -105,5 +106,10 @@ public class Launcher : MonoBehaviourPunCallbacks  {
 
 	public override void OnPlayerEnteredRoom(Player newPlayer) {
 		Instantiate(prefab_playerListItem, panel_playerListHolder).GetComponent<PlayerListItem>().SetUp(newPlayer);
+		button_startGame.GetComponent<Button>().interactable = PhotonNetwork.PlayerList.Length >= 2;
+	}
+
+	public override void OnPlayerLeftRoom(Player otherPlayer) {
+		button_startGame.GetComponent<Button>().interactable = PhotonNetwork.PlayerList.Length >= 2;
 	}
 }

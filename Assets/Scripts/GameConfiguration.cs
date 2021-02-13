@@ -7,6 +7,7 @@ using Photon.Pun;
 
 public class GameConfiguration : MonoBehaviour {
 	public static GameConfiguration Instance;
+	[SerializeField] private GameObject panel_ruleHolder;
 	ChessPlayer player;
 	PhotonView PV;
 
@@ -57,44 +58,40 @@ public class GameConfiguration : MonoBehaviour {
 	#endregion
 
 	#region Rules
-	// private int INVINCIBLEQUEENS = 0, BLACKBLIZZARD = 1, MITOSIS = 2, 
-	// 			NIGERUNDAYO = 3, DEADEYE = 4, JAAACK = 5, THEGECKOCOLLECTION = 6, 
-	// 			COMMUNISM = 7, WORLDDOMINATION = 8, HEROESNEVERDIE = 9, CHAOS = 10, 
-	// 			FAMINE = 11, QUEENFABRICATION = 12, METEOR  = 13, SOCIALISM = 14;
+	[SerializeField] private GameObject ruleGO;
+	
+	public List<int> activeRules = new List<int>();
 	#endregion
 
-	
 	void Awake() {
 		Instance = this;
 		DontDestroyOnLoad(gameObject);
 		PV = GetComponent<PhotonView>();
+
 		slider_boardSize.GetComponent<Slider>().onValueChanged.AddListener(delegate{  text_boardSize.text = slider_boardSize.GetValue().ToString();  });
 		slider_boardSize.SetMaxValue(16); // Setting max range for board size
 		slider_boardSize.SetMinValue(8);
+
+		for (int i = 0; i < Thumbnail.Instance.GetRuleThumbnails().Length; i++) {
+			Rule r = Instantiate(ruleGO, panel_ruleHolder.transform).GetComponent<Rule>();
+			r.SetRuleIndex(i);
+			r.SetRuleName(Thumbnail.Instance.GetRuleName(i));
+		}
 	}
 
 	public void ApplySettings() {
-		PV.RPC("RPC_ApplySettings", RpcTarget.All, slider_boardSize.GetValue());
+		PV.RPC("RPC_ApplySettings", RpcTarget.All, slider_boardSize.GetValue(), activeRules.ToArray());
 	}
 
-	private void EditPieces(pieceType[] pieceTypeSettings) {
-		pieces = pieceTypeSettings;
-	}
+	public void SetBoardSize(int size) => board.boardSize = (size, size);
 
-	private void EditBoard(boardType boardSettings) {
-		board = boardSettings;
-	}
+	public void AddRule(int index) { activeRules.Add(index); }
 
-	public void SetBoardSize(int size) { // changes boardsize
-		board.boardSize = (size, size);
-	}
-
-	public void SetRuleBundles() {
-
-	}
+	public void RemoveRule(int index) { activeRules.Remove(index); }
 
 	[PunRPC]
-	public void RPC_ApplySettings(int boardSize) {
+	public void RPC_ApplySettings(int boardSize, int[] rules) {
 		SetBoardSize(boardSize);
+		activeRules = new List<int>(rules);
 	}
 }

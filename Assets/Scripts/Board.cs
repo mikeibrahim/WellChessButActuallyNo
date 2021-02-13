@@ -47,9 +47,6 @@ public class Board : MonoBehaviour {
 		tiles = GameObject.FindObjectsOfType<Tile>();
 	}
 
-	// public void SetBoard() {
-	// }
-
 	public void CreateBoard() {
 		for (int x = 0; x < boardSize.Item1; x++) {
 			for (int y = 0; y < boardSize.Item2; y++) {
