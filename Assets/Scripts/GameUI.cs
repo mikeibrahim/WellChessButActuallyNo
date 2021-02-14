@@ -30,12 +30,12 @@ public class GameUI : MonoBehaviourPunCallbacks {
 	// public void SetPlayer(ChessPlayer p) => player = p;
 
 	public void BackToMainMenu() {
+		GameConfiguration gameConfig = GameObject.FindObjectOfType<GameConfiguration>();
+		Destroy(gameConfig);
 		PhotonNetwork.Disconnect();
 	}
 
 	public override void OnDisconnected(DisconnectCause cause) {
-		GameConfiguration gameConfig = GameObject.FindObjectOfType<GameConfiguration>();
-		Destroy(gameConfig);
 		SceneManager.LoadScene(0);
 	}
 }

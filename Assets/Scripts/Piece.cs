@@ -103,7 +103,7 @@ public class Piece : MonoBehaviour {
 
 	public bool GetIsActive() => isActivated;
 
-	private List<Vector2> GetPossibleMoves(Vector2 pos) { // Where the piece can move on the board
+	public List<Vector2> GetPossibleMoves(Vector2 pos) { // Where the piece can move on the board
 		List<Vector2> possibleMoves = new List<Vector2>(); // empty list to add positions
 		for (int x = 0; x < 2; x++) { // positive and negative x values
 			for (int y = 0; y < 2; y++) { // positive and negative y values
@@ -170,6 +170,14 @@ public class Piece : MonoBehaviour {
 		return PV.IsMine;
 	}
 
+	public List<Vector2> GetAttackVectors() {
+		return attackVectors;
+	}
+
+	public int GetName() {
+		return pieceName;
+	}
+
 
 	public void SetSprite(int index) {
 		PV.RPC("RPC_SetSprite", RpcTarget.All, index);
@@ -177,9 +185,9 @@ public class Piece : MonoBehaviour {
 
 	[PunRPC]
 	private void RPC_SetSprite(int index) {
-		print("Set up the sprite with: " + index);
+		// print("Set up the sprite with: " + index);
 		bool isWhite = (PhotonNetwork.IsMasterClient && PV.IsMine) || (!PhotonNetwork.IsMasterClient && !PV.IsMine);
 		spriteRenderer.sprite = isWhite ? Thumbnail.Instance.GetWhiteThumbnail(index) : Thumbnail.Instance.GetBlackThumbnail(index);
+		pieceName = index;
 	}
-
 }

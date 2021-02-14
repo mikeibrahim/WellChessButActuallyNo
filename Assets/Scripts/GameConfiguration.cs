@@ -28,7 +28,7 @@ public class GameConfiguration : MonoBehaviour {
         new pieceType(KNIGHT, 		(new(int, int)[]{ (1, 2) }, 			new(int, int)[]{ (0, 0) }), 			(false, true, 	false)),
         new pieceType(BISHOP, 		(new(int, int)[]{ (1, 1) }, 			new(int, int)[]{ (0, 0) }), 			(true, 	true, 	false)),
         new pieceType(QUEEN, 		(new(int, int)[]{ (0, 1), (1, 1) }, 	new(int, int)[]{ (0, 0), (0, 0) }), 	(true, 	true, 	false)),
-        new pieceType(KING, 		(new(int, int)[]{ (0, 1), (1, 1)  }, 	new(int, int)[]{ (0, 0), (0, 0) }), 	(false, true, 	false)),
+        new pieceType(KING, 		(new(int, int)[]{ (0, 1), (1, 1) }, 	new(int, int)[]{ (0, 0), (0, 0) }), 	(false, true, 	false)),
     };
 	#endregion
 
@@ -61,6 +61,22 @@ public class GameConfiguration : MonoBehaviour {
 	[SerializeField] private GameObject ruleGO;
 	
 	public List<int> activeRules = new List<int>();
+
+	public static int  	BlackVoid = 		0,
+						Chaos = 			1,
+						Communism = 		2,
+						Deadeye = 			3,
+						Famine = 			4,
+						Gecko = 			5,
+						HeroesNeverDie = 	6,
+						InvincibleQueens = 	7,
+						Jack = 				8,
+						Meteor = 			9,
+						Mitosis = 			10,
+						Nigerundayo = 		11,
+						QueenFabrication = 	12,
+						Socialism = 		13,
+						WorldDomination = 	14;
 	#endregion
 
 	void Awake() {
@@ -94,4 +110,6 @@ public class GameConfiguration : MonoBehaviour {
 		SetBoardSize(boardSize);
 		activeRules = new List<int>(rules);
 	}
+
+	public bool GetRule(int index) => activeRules.Contains(index);
 }

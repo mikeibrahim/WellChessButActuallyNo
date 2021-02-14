@@ -9,8 +9,10 @@ public class Tile : MonoBehaviour {
 	[SerializeField] private Image image;
 	Color defaultColor;
 	ChessPlayer player;
+	Collider2D col;
 
-	private void Start() {
+	public void SetUp() {
+		col = GetComponent<Collider2D>();
 		transform.SetParent(GameObject.Find("World").transform); // Sets the parent to the World canvas
 		ChessPlayer[] players = GameObject.FindObjectsOfType<ChessPlayer>();
 		foreach (ChessPlayer p in players) {
@@ -24,17 +26,19 @@ public class Tile : MonoBehaviour {
 		image.color = defaultColor;
 	}
 
-	public void SetGreen(bool b) {
-		if (player.GetMyTurn()) {
-			image.color = b ? Color.green : defaultColor;
-		}
+	public void SetColor(Color c, bool b) {
+		// if (player.GetMyTurn()) {
+			image.color = b ? c : defaultColor;
+		// }
 	}
 
-	public void SetRed(bool b) {
-		if (player.GetMyTurn()) {
-			image.color = b ? Color.red : defaultColor;
-		}
+	public void SetTIleCollider(bool b) {
+		col.enabled = b;
 	}
+
+	public bool GetTileCollidre() => col.enabled;
+
+	public Color GetColor() => image.color;
 
 	public void OnClick() {
 		if (image.color == Color.green || image.color == Color.red) { // if Tile is ready to be moved on

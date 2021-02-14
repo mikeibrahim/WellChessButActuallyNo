@@ -21,6 +21,12 @@ public class Rule : MonoBehaviour {
 		isActivated = !isActivated;
 
 		text_activated.text = isActivated ? "<color=green>Activated</color>" : "<color=red>Deactivated</color>";
+
+		if (isActivated) {
+			GameConfiguration.Instance.AddRule(ruleIndex);
+		} else {
+			GameConfiguration.Instance.RemoveRule(ruleIndex);
+		}
 	}
 
 	public void SetRuleIndex(int index) => ruleIndex = index;

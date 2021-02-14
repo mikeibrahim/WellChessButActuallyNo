@@ -35,6 +35,8 @@ public class Board : MonoBehaviour {
 	boardPieceType[] boardPieces;
 	Tile[] tiles;
 
+	int xOffset = -1;
+
 	private void Awake() {
 		currentBoard = GameConfiguration.Instance.board;
 		boardName = currentBoard.boardName;
@@ -45,6 +47,10 @@ public class Board : MonoBehaviour {
 	private void Start() {
 		CreateBoard();
 		tiles = GameObject.FindObjectsOfType<Tile>();
+		print("Black Void: " + GameConfiguration.Instance.GetRule(GameConfiguration.BlackVoid));
+		// if (GameConfiguration.Instance.GetRule(GameConfiguration.BlackVoid)) {
+		// 	NewBlackVoid();
+		// }
 	}
 
 	public void CreateBoard() {
@@ -52,6 +58,7 @@ public class Board : MonoBehaviour {
 			for (int y = 0; y < boardSize.Item2; y++) {
 				Vector2 spawnPos = new Vector2(x, y);
 				Tile t = Instantiate(tile, spawnPos, Quaternion.identity);
+				t.SetUp();
 				t.SetCheckered(altColor);
 				altColor = !altColor; // Alternating colors between rows
 			}
@@ -71,7 +78,7 @@ public class Board : MonoBehaviour {
 
 			foreach (Collider2D col in colliders) {
 				if (!hitPiece) { // if not moving into piece
-					col.gameObject.GetComponent<Tile>()?.SetGreen(true);
+					col.gameObject.GetComponent<Tile>()?.SetColor(Color.green, true);
 				}
 			}
 		}
@@ -89,7 +96,7 @@ public class Board : MonoBehaviour {
 
 			foreach (Collider2D col in colliders) {
 				if (hitPiece) { // if not moving into piece
-					col.gameObject.GetComponent<Tile>()?.SetRed(true);
+					col.gameObject.GetComponent<Tile>()?.SetColor(Color.red, true);
 				}
 			}
 		}
@@ -98,11 +105,36 @@ public class Board : MonoBehaviour {
 
 	public void ResetTileColors() {
 		foreach (Tile t in tiles) {
-			t.SetGreen(false);
+			if (!t.GetTileCollidre()) { continue; }
+			t.SetColor(Color.green, false);
 		}
 	}
 
 	public boardPieceType[] GetPieces() => boardPieces;
 
 	public (int, int) GetBoardSize() => boardSize;
+
+	// public void NewBlackVoid() {
+	// 	for (int x = 0; x < 2; x++) {
+	// 		for (int y = 0; y < 2; y++) {
+	// 			Vector2 pos = new Vector2(boardSize.Item1 / 2 + x - xOffset, boardSize.Item1 / 2 + y - 1); // center 4 squares
+	// 			Collider2D[] colliders = Physics2D.OverlapCircleAll(pos, 0.1f); // find colliders
+	// 			foreach (Collider2D col in colliders) { 
+	// 				col.GetComponent<Tile>()?.SetColor(Color.black, true);
+	// 				col.GetComponent<Tile>()?.SetTIleCollider(false);
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+	// public void BlackVoid() {
+	// 	if (GameManager.Instance.GetTurns() % 4 == 0) {
+	// 		foreach (Tile t in tiles) {
+	// 			t.SetTIleCollider(true);
+	// 		}
+	// 		ResetTileColors();
+	// 		xOffset += 4;
+	// 		NewBlackVoid();
+	// 	}
+	// }
 }

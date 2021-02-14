@@ -29,7 +29,7 @@ public class RoomManager : MonoBehaviourPunCallbacks {
 	// 	SceneManager.sceneLoaded -= OnSceneLoaded;
 	// }
 
-	void Start() {
+	void Awake() {
 		PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "ChessPlayer"), Vector3.zero, Quaternion.identity);
 	}
 

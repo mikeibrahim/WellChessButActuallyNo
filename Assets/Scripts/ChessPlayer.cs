@@ -27,9 +27,6 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 		SetUpPieces();
 	}
 
-	// void Start() {
-	// }
-
 	#region Pieces
 	public void SetUpPieces() {
 		if (PV.IsMine) {
@@ -73,6 +70,11 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 						myTurn = false;
 					}
 				}
+
+				if (GameConfiguration.Instance.GetRule(GameConfiguration.Deadeye)) {
+					print("You have deadeye");
+					Deadeye();
+				}
 				break;
 			}
 		}
@@ -91,16 +93,41 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 	}
 
 	public bool GetMyTurn() => myTurn;
+
+	public void AddTurn() {
+		PV.RPC("RPC_AddTurn", RpcTarget.All);
+	}
+
+	[PunRPC]
+	private void RPC_AddTurn() {
+		if (!PV.IsMine) { return; } // if local
+		GameManager.Instance.AddTurn();
+	}
 	#endregion
+
+	public void Deadeye() {
+		foreach (Piece currPiece in myPieces) { // for each of my pieces
+			foreach (Vector2 attVector in currPiece.GetAttackVectors()) { // for every attack vector{
+				foreach (Vector2 possibleMove in currPiece.GetPossibleMoves(attVector)) { // for every attack vector 
+					Collider2D[] colliders = Physics2D.OverlapCircleAll(possibleMove, 0.1f); // gets objs at that position
+					foreach (Collider2D col in colliders) {
+						if (col.gameObject.GetComponent<Piece>() && !col.gameObject.GetComponent<Piece>().GetIsMine() && col.gameObject.GetComponent<Piece>().GetName() == GameConfiguration.KING) {
+							col.gameObject.GetComponent<Piece>().TakePiece();
+						}
+					}
+				}
+			}
+		}
+	}
 
 	public void LoseGame() {
 		ChessPlayer[] chessPlayers = GameObject.FindObjectsOfType<ChessPlayer>();
 		foreach (ChessPlayer cp in chessPlayers) {
 			if (cp.gameObject != gameObject) { // if opponent
+				print("Made that player win");
 				cp.WinGame();
 			}
 		}
-
 		ShowEndPanel("You lost...");
 	}
 
@@ -116,6 +143,7 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 	}
 
 	public void ShowEndPanel(string text) {
+		print("Here is the end panel");
 		gameUI.SetEndScreenActive(true);
 		gameUI.SetEndText(text);
 	}
