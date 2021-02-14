@@ -116,16 +116,16 @@ public class Board : MonoBehaviour {
 
 	public (int, int) GetBoardSize() => boardSize;
 
-	public Vector2 GetSpawn() {
-		Vector2 pos = tilesForSpawn[Random.Range(0, tilesForSpawn.Count)];
-		PV.RPC("RPC_GetSpawn", RpcTarget.All, pos);
-		return pos;
-	}
+	// public Vector2 GetSpawn() {
+	// 	Vector2 pos = tilesForSpawn[Random.Range(0, tilesForSpawn.Count)];
+	// 	PV.RPC("RPC_GetSpawn", RpcTarget.All, pos);
+	// 	return pos;
+	// }
 
-	[PunRPC]
-	public void RPC_GetSpawn(Vector2 pos) {
-		tilesForSpawn.Remove(pos);
-	}
+	// [PunRPC]
+	// public void RPC_GetSpawn(Vector2 pos) {
+	// 	tilesForSpawn.Remove(pos);
+	// }
 
 
 	// public void NewBlackVoid() {
