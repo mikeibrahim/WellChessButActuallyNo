@@ -50,7 +50,6 @@ public class Board : MonoBehaviour {
 	private void Start() {
 		CreateBoard();
 		tiles = GameObject.FindObjectsOfType<Tile>();
-		print("Black Void: " + GameConfiguration.Instance.GetRule(GameConfiguration.BlackVoid));
 		if (GameConfiguration.Instance.GetRule(GameConfiguration.Chaos)) {
 			foreach (Tile t in tiles) {
 				tilesForSpawn.Add(t.transform.position);

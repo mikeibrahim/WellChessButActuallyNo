@@ -10,6 +10,7 @@ public class Rule : MonoBehaviour {
 	[SerializeField] private TMP_Text text_ruleName;
 	[SerializeField] private Button button_activated;
 	[SerializeField] private TMP_Text text_activated;
+	[SerializeField] private TMP_Text text_description;
 	bool isActivated = false;
 
     void Start() {
@@ -30,5 +31,8 @@ public class Rule : MonoBehaviour {
 	}
 
 	public void SetRuleIndex(int index) => ruleIndex = index;
-	public void SetRuleName(string name) => text_ruleName.text = name;
+	public void SetRuleName(string name) {
+		text_ruleName.text = name;
+		text_description.text = GameConfiguration.descriptions[ruleIndex];
+	}
 }

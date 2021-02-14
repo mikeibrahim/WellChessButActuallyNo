@@ -35,7 +35,7 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 			foreach (boardPieceType boardPiece in myBoardPieces) { // Creates my pieces on my side
 				Vector2 spawnPos = new Vector2(boardPiece.spawnPos.Item1, boardPiece.spawnPos.Item2); // This gets the spawn position from each board piece
 				Piece p = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Piece"), spawnPos, Quaternion.identity).GetComponent<Piece>();
-				if (!GameConfiguration.Instance.GetRule(GameConfiguration.Socialism)) {
+				if (!GameConfiguration.Instance.GetRule(GameConfiguration.Communism)) {
 					p.SetUpPiece(this, GameConfiguration.Instance.pieces[boardPiece.pieceIndex]); // Sets up piece
 				} else {
 					p.SetUpPiece(this, GameConfiguration.Instance.pieces[GameConfiguration.PAWN]); // Sets up piece
@@ -44,8 +44,6 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 					PhotonNetwork.Destroy(p.gameObject);
 				}
 				myPieces.Add(p);
-
-				
 			}
 
 			if (!PhotonNetwork.IsMasterClient) { // Moving pieces to other side of board in case of P2

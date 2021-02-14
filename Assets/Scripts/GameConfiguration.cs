@@ -74,21 +74,27 @@ public class GameConfiguration : MonoBehaviour {
 	
 	public List<int> activeRules = new List<int>();
 
-	public static int  	BlackVoid = 		0,
-						Chaos = 			1,
-						Communism = 		2,
-						Deadeye = 			3,
-						Famine = 			4,
-						Gecko = 			5,
-						HeroesNeverDie = 	6,
-						InvincibleQueens = 	7,
-						Jack = 				8,
-						Meteor = 			9,
-						Mitosis = 			10,
-						Nigerundayo = 		11,
-						QueenFabrication = 	12,
-						Socialism = 		13,
-						WorldDomination = 	14;
+	public static int  	Chaos = 			0,
+						Communism = 		1,
+						Deadeye = 			2,
+						Famine = 			3,
+						Gecko = 			4,
+						HeroesNeverDie = 	5,
+						Jack = 				6,
+						Nigerundayo = 		7,
+						QueenFabrication = 	8,
+						WorldDomination = 	9;
+
+	public static string[] descriptions = new string[] { 	"Chaos",
+															"All Pieces are equal",
+															"Check = Checkmate",
+															"Pawns are gone",
+															"Gecko Sprites",
+															"Respawning Pieces",
+															"JackSprites",
+															"Hotfoot it outta there",
+															"Promotions happen halfway",
+															"PS, California" };
 	#endregion
 
 	void Awake() {
@@ -99,7 +105,9 @@ public class GameConfiguration : MonoBehaviour {
 		slider_boardSize.GetComponent<Slider>().onValueChanged.AddListener(delegate{  text_boardSize.text = slider_boardSize.GetValue().ToString();  });
 		slider_boardSize.SetMaxValue(16); // Setting max range for board size
 		slider_boardSize.SetMinValue(8);
+	}
 
+	void Start() {
 		for (int i = 0; i < Thumbnail.Instance.GetRuleThumbnails().Length; i++) {
 			Rule r = Instantiate(ruleGO, panel_ruleHolder.transform).GetComponent<Rule>();
 			r.SetRuleIndex(i);

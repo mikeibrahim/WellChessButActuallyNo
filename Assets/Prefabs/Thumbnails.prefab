@@ -58,20 +58,15 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 4b6052dd54d644cdab0d6f8ad883cdc4, type: 3}
   - {fileID: 21300000, guid: 5e40614da48544f8e9c94e0947ec3448, type: 3}
   ruleThumbnails:
-  - {fileID: 21300000, guid: 8a43d5369a4a54c21bb3f7ae4dee8934, type: 3}
   - {fileID: 21300000, guid: 3efafb0785f7144c2be997e9d7f77222, type: 3}
   - {fileID: 21300000, guid: ab118b48982474744b6b09ae14a76a51, type: 3}
   - {fileID: 21300000, guid: 0c24f47b651664efeb56ddd344caa3b0, type: 3}
   - {fileID: 21300000, guid: ba68022605b904e899a4badfa67ab1b8, type: 3}
   - {fileID: 21300000, guid: 42c44271772a544ec88639af51a0df47, type: 3}
   - {fileID: 21300000, guid: d2f776dc427c943478904b8442fbafdf, type: 3}
-  - {fileID: 21300000, guid: 2810815ddc0b548b2a35ae53bd93d34b, type: 3}
   - {fileID: 21300000, guid: de09bdab1bac9417999316cfe1094bc5, type: 3}
-  - {fileID: 21300000, guid: e173dc6123af4427a981ffd4c4382586, type: 3}
-  - {fileID: 21300000, guid: d10599103d31c4410a84265d8350ad60, type: 3}
   - {fileID: 21300000, guid: 3220ee194be5b46d883fe89471a8bf8b, type: 3}
   - {fileID: 21300000, guid: 289b2b3f1bd61404e87ef92db0523742, type: 3}
-  - {fileID: 21300000, guid: d57d55b80ce724ddc915cc10ace2abec, type: 3}
   - {fileID: 21300000, guid: c35d1fa25e2ce4d6dbbb73207ed76c60, type: 3}
   jackThumbnails:
   - {fileID: 21300000, guid: d0f83491948ca4411808791d135c82d2, type: 3}
