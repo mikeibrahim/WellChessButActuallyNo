@@ -80,6 +80,16 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 					}
 				}
 
+				print("Piece Pos y: " + p.transform.position.y);
+				print("Board Size: " + (board.GetBoardSize().Item2 - 1));
+
+				if (p.GetName() == GameConfiguration.PAWN && (p.transform.position.y == board.GetBoardSize().Item2 - 1 || p.transform.position.y == 0)) {
+					Piece newPiece = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Piece"), p.transform.position, p.transform.rotation).GetComponent<Piece>();
+					newPiece.SetUpPiece(this, GameConfiguration.Instance.pieces[GameConfiguration.QUEEN]); // Sets up piece
+					myPieces.Add(newPiece);
+					PhotonNetwork.Destroy(p.gameObject);
+				}
+
 				if (GameConfiguration.Instance.GetRule(GameConfiguration.Deadeye)) {
 					print("You have deadeye");
 					Deadeye();
