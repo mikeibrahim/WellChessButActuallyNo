@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 using UnityEngine.UI;
+using TMPro;
 
 public class Tile : MonoBehaviour {
 	[SerializeField] private Color whiteTileColor;
 	[SerializeField] private Color blackTileColor;
 	[SerializeField] private Image image;
+	[SerializeField] private TMP_Text tileName;
 	Color defaultColor;
 	ChessPlayer player;
 	Collider2D col;
@@ -18,6 +21,14 @@ public class Tile : MonoBehaviour {
 		foreach (ChessPlayer p in players) {
 			print("Player: " + p);
 			if (p && p.GetIsMine()) { player = p; } // Gets the local player
+		}
+		if (GameConfiguration.Instance.GetRule(GameConfiguration.WorldDomination)) {
+			SetTileName(GameConfiguration.Instance.GetWDName());
+			if (!PhotonNetwork.IsMasterClient) {
+				Vector3 rot = transform.eulerAngles;
+				rot.z += 180;
+				transform.eulerAngles = rot;
+			}
 		}
 	}
 	
@@ -46,5 +57,9 @@ public class Tile : MonoBehaviour {
 		// } else if (image.color == Color.red) {
 		// 	player.AttackPieceAt(transform.position);
 		}
+	}
+
+	public void SetTileName(string s) {
+		tileName.text = s;
 	}
 }

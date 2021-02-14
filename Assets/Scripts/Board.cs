@@ -27,6 +27,7 @@ public struct boardType { // board settings
 
 public class Board : MonoBehaviour {
 	[SerializeField] private Tile tile = null;
+	PhotonView PV;
 
 	boardType currentBoard;
 	string boardName;
@@ -34,10 +35,12 @@ public class Board : MonoBehaviour {
 	bool altColor;
 	boardPieceType[] boardPieces;
 	Tile[] tiles;
+	List<Vector2> tilesForSpawn = new List<Vector2>();
 
 	int xOffset = -1;
 
 	private void Awake() {
+		PV = GetComponent<PhotonView>();
 		currentBoard = GameConfiguration.Instance.board;
 		boardName = currentBoard.boardName;
 		boardSize = currentBoard.boardSize;
@@ -48,9 +51,11 @@ public class Board : MonoBehaviour {
 		CreateBoard();
 		tiles = GameObject.FindObjectsOfType<Tile>();
 		print("Black Void: " + GameConfiguration.Instance.GetRule(GameConfiguration.BlackVoid));
-		// if (GameConfiguration.Instance.GetRule(GameConfiguration.BlackVoid)) {
-		// 	NewBlackVoid();
-		// }
+		if (GameConfiguration.Instance.GetRule(GameConfiguration.Chaos)) {
+			foreach (Tile t in tiles) {
+				tilesForSpawn.Add(t.transform.position);
+			}
+		}
 	}
 
 	public void CreateBoard() {
@@ -113,6 +118,18 @@ public class Board : MonoBehaviour {
 	public boardPieceType[] GetPieces() => boardPieces;
 
 	public (int, int) GetBoardSize() => boardSize;
+
+	public Vector2 GetSpawn() {
+		Vector2 pos = tilesForSpawn[Random.Range(0, tilesForSpawn.Count)];
+		PV.RPC("RPC_GetSpawn", RpcTarget.All, pos);
+		return pos;
+	}
+
+	[PunRPC]
+	public void RPC_GetSpawn(Vector2 pos) {
+		tilesForSpawn.Remove(pos);
+	}
+
 
 	// public void NewBlackVoid() {
 	// 	for (int x = 0; x < 2; x++) {

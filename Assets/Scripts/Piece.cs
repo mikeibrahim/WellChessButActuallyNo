@@ -57,6 +57,13 @@ public class Piece : MonoBehaviour {
 	private void Start() {
 		transform.SetParent(GameObject.FindObjectOfType<Canvas>().transform); // Sets the parent to the World canvas
 		startPos = transform.position;
+		if (GameConfiguration.Instance.GetRule(GameConfiguration.Chaos)) {
+			transform.position = board.GetSpawn();
+			if (Physics2D.OverlapCircleAll(transform.position, 0.1f).Length >= 2) {
+				transform.position = board.GetSpawn();
+			}
+		}
+
 	}
 
 	public void SetUpPiece(ChessPlayer player, pieceType type) {
@@ -226,7 +233,6 @@ public class Piece : MonoBehaviour {
 		if (GameConfiguration.Instance.GetRule(GameConfiguration.Jack)) {
 			spriteRenderer.sprite = Thumbnail.Instance.GetJackThumbnail(index);
 		}
-
 	}
 
 	[PunRPC]

@@ -44,6 +44,8 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 					PhotonNetwork.Destroy(p.gameObject);
 				}
 				myPieces.Add(p);
+
+				
 			}
 
 			if (!PhotonNetwork.IsMasterClient) { // Moving pieces to other side of board in case of P2
@@ -109,6 +111,20 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 			}
 		}
 	}
+
+	// public void RandomizeSpawn(GameObject go) {
+	// 	print("Board x: "+board.GetBoardSize().Item1);
+	// 	print("Board y: "+board.GetBoardSize().Item2);
+	// 	int randX =Random.Range(0, board.GetBoardSize().Item1 - 1);
+	// 	int randY = Random.Range(0, board.GetBoardSize().Item2 - 1);
+	// 	print("Rand x: "+randX);
+	// 	print("Rand y: "+randY);
+	// 	Vector2 pos = new Vector2(randX, randY);
+	// 	go.transform.position = pos;
+	// 	if (Physics2D.OverlapCircleAll(pos, 0.1f).Length != 1) {
+	// 		RandomizeSpawn(go);
+	// 	}
+	// }
 	#endregion
 
 	#region Turns
