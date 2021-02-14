@@ -75,4 +75,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 62e3647896f1f42f9a2b698da33cd9ce, type: 3}
   - {fileID: 21300000, guid: b836bb600f2ce4f849e22630ffa58f7e, type: 3}
   - {fileID: 21300000, guid: 33b2eeeaaaa23428380833898d282bc5, type: 3}
-  geckoThumbnails: []
+  geckoThumbnails:
+  - {fileID: 21300000, guid: 1f8b96e476b9d4010964ac0232d594de, type: 3}
+  - {fileID: 21300000, guid: bdfecd380787645189a502018bea6b3d, type: 3}
+  - {fileID: 21300000, guid: 1043ea9f061d2428e9498c1d50437f86, type: 3}
+  - {fileID: 21300000, guid: 5185a8d988fd54ef5a04ce8f1c9a61dd, type: 3}
+  - {fileID: 21300000, guid: e70b5181d95bf43699b5cbeb84a275d6, type: 3}
+  - {fileID: 21300000, guid: cba2bc748ff864e328ad996d5e921d6a, type: 3}

@@ -37,8 +37,6 @@ public class Board : MonoBehaviour {
 	Tile[] tiles;
 	List<Vector2> tilesForSpawn = new List<Vector2>();
 
-	int xOffset = -1;
-
 	private void Awake() {
 		PV = GetComponent<PhotonView>();
 		currentBoard = GameConfiguration.Instance.board;

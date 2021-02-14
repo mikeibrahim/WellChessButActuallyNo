@@ -41,6 +41,7 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 					p.SetUpPiece(this, GameConfiguration.Instance.pieces[GameConfiguration.PAWN]); // Sets up piece
 				}
 				if (GameConfiguration.Instance.GetRule(GameConfiguration.Famine) && p.GetName() == GameConfiguration.PAWN) {
+					myPieces.Remove(p);
 					PhotonNetwork.Destroy(p.gameObject);
 				}
 				myPieces.Add(p);
@@ -91,6 +92,7 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 						newPiece.transform.rotation = p.transform.rotation;
 						newPiece.SetUpPiece(this, GameConfiguration.Instance.pieces[GameConfiguration.QUEEN]); // Sets up piece
 						myPieces.Add(newPiece);
+						myPieces.Remove(p);
 						PhotonNetwork.Destroy(p.gameObject);
 					}
 				} else {
@@ -98,6 +100,7 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 						Piece newPiece = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Piece"), p.transform.position, p.transform.rotation).GetComponent<Piece>();
 						newPiece.SetUpPiece(this, GameConfiguration.Instance.pieces[GameConfiguration.QUEEN]); // Sets up piece
 						myPieces.Add(newPiece);
+						myPieces.Remove(p);
 						PhotonNetwork.Destroy(p.gameObject);
 					}
 				}
@@ -109,20 +112,6 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 			}
 		}
 	}
-
-	// public void RandomizeSpawn(GameObject go) {
-	// 	print("Board x: "+board.GetBoardSize().Item1);
-	// 	print("Board y: "+board.GetBoardSize().Item2);
-	// 	int randX =Random.Range(0, board.GetBoardSize().Item1 - 1);
-	// 	int randY = Random.Range(0, board.GetBoardSize().Item2 - 1);
-	// 	print("Rand x: "+randX);
-	// 	print("Rand y: "+randY);
-	// 	Vector2 pos = new Vector2(randX, randY);
-	// 	go.transform.position = pos;
-	// 	if (Physics2D.OverlapCircleAll(pos, 0.1f).Length != 1) {
-	// 		RandomizeSpawn(go);
-	// 	}
-	// }
 	#endregion
 
 	#region Turns
@@ -206,7 +195,12 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 			// Piece p = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Piece"), go.GetComponent<Piece>().GetStartPos(), Quaternion.identity).GetComponent<Piece>();
 			go.transform.position = currPiece.GetStartPos();
 		} else {
+			myPieces.Remove(go.GetComponent<Piece>());
 			PhotonNetwork.Destroy(go);
+		}
+
+		if (myPieces.Count == 0) {
+			LoseGame();
 		}
 	}
 
