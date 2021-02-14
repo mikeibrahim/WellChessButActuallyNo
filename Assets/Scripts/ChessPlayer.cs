@@ -14,6 +14,17 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 	boardPieceType[] myBoardPieces;
 	List<Piece> myPieces = new List<Piece>();
 	bool myTurn = true;
+
+	void Awake() {
+		if (GameObject.FindObjectsOfType<ChessPlayer>().Length > 2 && PV.IsMine) {
+			PhotonNetwork.Disconnect();
+		}
+	}
+
+	public override void OnDisconnected(DisconnectCause cause) {
+		SceneManager.LoadScene(0);
+	}
+
     
 	void Start() {
 		PV = GetComponent<PhotonView>();

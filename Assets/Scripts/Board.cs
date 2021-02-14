@@ -64,7 +64,9 @@ public class Board : MonoBehaviour {
 				t.SetCheckered(altColor);
 				altColor = !altColor; // Alternating colors between rows
 			}
-			altColor = !altColor; // to Switch which color goes first 
+			if (boardSize.Item1 % 2 == 0) {
+				altColor = !altColor; // to Switch which color goes first 
+			}
 		}
 	}
 
