@@ -36,11 +36,20 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 				Vector2 spawnPos = new Vector2(boardPiece.spawnPos.Item1, boardPiece.spawnPos.Item2); // This gets the spawn position from each board piece
 				Piece p = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Piece"), spawnPos, Quaternion.identity).GetComponent<Piece>();
 				p.SetUpPiece(this, GameConfiguration.Instance.pieces[boardPiece.pieceIndex]); // Sets up piece
+				if (GameConfiguration.Instance.GetRule(GameConfiguration.Famine) && p.GetName() == GameConfiguration.PAWN) {
+					PhotonNetwork.Destroy(p.gameObject);
+				}
 				myPieces.Add(p);
 			}
 
 			if (!PhotonNetwork.IsMasterClient) { // Moving pieces to other side of board in case of P2
 				foreach (Piece p in myPieces) {
+					if (p.GetName() == GameConfiguration.QUEEN) {
+						p.transform.Translate(-Vector2.left);
+					} else if (p.GetName() == GameConfiguration.KING) {
+						p.transform.Translate(Vector2.left);
+					}
+
 					Vector2 cornerOfBoard = new Vector2(board.GetBoardSize().Item1-1, board.GetBoardSize().Item2-1);
 					p.gameObject.transform.Translate(cornerOfBoard); // translates
 					p.gameObject.transform.RotateAround(cornerOfBoard, Vector3.forward, 180); // rotate 190 degrees around corner
@@ -124,7 +133,6 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 		ChessPlayer[] chessPlayers = GameObject.FindObjectsOfType<ChessPlayer>();
 		foreach (ChessPlayer cp in chessPlayers) {
 			if (cp.gameObject != gameObject) { // if opponent
-				print("Made that player win");
 				cp.WinGame();
 			}
 		}
@@ -143,7 +151,6 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 	}
 
 	public void ShowEndPanel(string text) {
-		print("Here is the end panel");
 		gameUI.SetEndScreenActive(true);
 		gameUI.SetEndText(text);
 	}
