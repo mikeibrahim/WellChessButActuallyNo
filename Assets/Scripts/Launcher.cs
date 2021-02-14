@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
@@ -88,6 +89,13 @@ public class Launcher : MonoBehaviourPunCallbacks  {
 	public void JoinRoom(RoomInfo info) {
 		PhotonNetwork.JoinRoom(info.Name);
 		MenuManager.Instance.SetMenu(MenuManager.LoadingMenu);
+		if (info.PlayerCount >= 2) {
+			PhotonNetwork.Disconnect();
+		}
+	}
+
+	public override void OnDisconnected(DisconnectCause cause) {
+		SceneManager.LoadScene(0);
 	}
 
 	public override void OnLeftRoom() {

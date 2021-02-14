@@ -104,7 +104,7 @@ public class GameConfiguration : MonoBehaviour {
 
 		slider_boardSize.GetComponent<Slider>().onValueChanged.AddListener(delegate{  text_boardSize.text = slider_boardSize.GetValue().ToString();  });
 		slider_boardSize.SetMaxValue(16); // Setting max range for board size
-		slider_boardSize.SetMinValue(8);  ﬁ
+		slider_boardSize.SetMinValue(8);
 	}
 
 	void Start() {
