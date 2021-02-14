@@ -35,7 +35,11 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 			foreach (boardPieceType boardPiece in myBoardPieces) { // Creates my pieces on my side
 				Vector2 spawnPos = new Vector2(boardPiece.spawnPos.Item1, boardPiece.spawnPos.Item2); // This gets the spawn position from each board piece
 				Piece p = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Piece"), spawnPos, Quaternion.identity).GetComponent<Piece>();
-				p.SetUpPiece(this, GameConfiguration.Instance.pieces[boardPiece.pieceIndex]); // Sets up piece
+				if (!GameConfiguration.Instance.GetRule(GameConfiguration.Socialism)) {
+					p.SetUpPiece(this, GameConfiguration.Instance.pieces[boardPiece.pieceIndex]); // Sets up piece
+				} else {
+					p.SetUpPiece(this, GameConfiguration.Instance.pieces[GameConfiguration.PAWN]); // Sets up piece
+				}
 				if (GameConfiguration.Instance.GetRule(GameConfiguration.Famine) && p.GetName() == GameConfiguration.PAWN) {
 					PhotonNetwork.Destroy(p.gameObject);
 				}
@@ -63,6 +67,7 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 			if (p.GetIsActive()) { // if it is the active piece
 				p.transform.position = pos; // Moving piece
 				p.SetIsActive(false); // removing active variable
+				p.SetNigerundayo(false);
 				board.ResetTileColors(); // getting rid of the green/red squares
 				
 				Collider2D[] colliders = Physics2D.OverlapCircleAll(p.gameObject.transform.position, 0.1f); // Finding piece to take
@@ -80,19 +85,25 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 					}
 				}
 
-				print("Piece Pos y: " + p.transform.position.y);
-				print("Board Size: " + (board.GetBoardSize().Item2 - 1));
-
-				if (p.GetName() == GameConfiguration.PAWN && (p.transform.position.y == board.GetBoardSize().Item2 - 1 || p.transform.position.y == 0)) {
-					Piece newPiece = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Piece"), p.transform.position, p.transform.rotation).GetComponent<Piece>();
-					newPiece.SetUpPiece(this, GameConfiguration.Instance.pieces[GameConfiguration.QUEEN]); // Sets up piece
-					myPieces.Add(newPiece);
-					PhotonNetwork.Destroy(p.gameObject);
+				if (GameConfiguration.Instance.GetRule(GameConfiguration.QueenFabrication)) {
+					if (p.GetName() == GameConfiguration.PAWN && ((p.transform.position.y >= board.GetBoardSize().Item2 / 2.0 && p.GetIsWhite()) || (p.transform.position.y < (board.GetBoardSize().Item2 - 1) / 2.0 && !p.GetIsWhite()))) { // for queen fabrication
+						Piece newPiece = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Piece"), p.transform.position, Quaternion.identity).GetComponent<Piece>();
+						newPiece.transform.rotation = p.transform.rotation;
+						newPiece.SetUpPiece(this, GameConfiguration.Instance.pieces[GameConfiguration.QUEEN]); // Sets up piece
+						myPieces.Add(newPiece);
+						PhotonNetwork.Destroy(p.gameObject);
+					}
+				} else {
+					if (p.GetName() == GameConfiguration.PAWN && (p.transform.position.y == board.GetBoardSize().Item2 - 1 || p.transform.position.y == 0)) { // for pawn promotion
+						Piece newPiece = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Piece"), p.transform.position, p.transform.rotation).GetComponent<Piece>();
+						newPiece.SetUpPiece(this, GameConfiguration.Instance.pieces[GameConfiguration.QUEEN]); // Sets up piece
+						myPieces.Add(newPiece);
+						PhotonNetwork.Destroy(p.gameObject);
+					}
 				}
 
-				if (GameConfiguration.Instance.GetRule(GameConfiguration.Deadeye)) {
-					print("You have deadeye");
-					Deadeye();
+				if (GameConfiguration.Instance.GetRule(GameConfiguration.Deadeye) || GameConfiguration.Instance.GetRule(GameConfiguration.Nigerundayo)) { // Deadeye rule
+					Deadeye_Nigerundayo();
 				}
 				break;
 			}
@@ -124,20 +135,29 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 	}
 	#endregion
 
-	public void Deadeye() {
+	public void Deadeye_Nigerundayo() {
 		foreach (Piece currPiece in myPieces) { // for each of my pieces
-			foreach (Vector2 attVector in currPiece.GetAttackVectors()) { // for every attack vector{
-				foreach (Vector2 possibleMove in currPiece.GetPossibleMoves(attVector)) { // for every attack vector 
-					Collider2D[] colliders = Physics2D.OverlapCircleAll(possibleMove, 0.1f); // gets objs at that position
-					foreach (Collider2D col in colliders) {
-						if (col.gameObject.GetComponent<Piece>() && !col.gameObject.GetComponent<Piece>().GetIsMine() && col.gameObject.GetComponent<Piece>().GetName() == GameConfiguration.KING) {
-							col.gameObject.GetComponent<Piece>().TakePiece();
+			if (currPiece) {
+				foreach (Vector2 attVector in currPiece.GetAttackVectors()) { // for every attack vector{
+					foreach (Vector2 possibleMove in currPiece.GetPossibleMoves(attVector)) { // for every attack vector 
+						Collider2D[] colliders = Physics2D.OverlapCircleAll(possibleMove, 0.1f); // gets objs at that position
+						foreach (Collider2D col in colliders) {
+							if (col.gameObject.GetComponent<Piece>() && !col.gameObject.GetComponent<Piece>().GetIsMine() && col.gameObject.GetComponent<Piece>().GetName() == GameConfiguration.KING) {
+								if (GameConfiguration.Instance.GetRule(GameConfiguration.Deadeye)) {
+									col.gameObject.GetComponent<Piece>().TakePiece();
+								} else if (GameConfiguration.Instance.GetRule(GameConfiguration.Nigerundayo)) {
+									print("Set king to Nigerundayo");
+									col.gameObject.GetComponent<Piece>().Nigerundayo();
+								}
+							}
 						}
 					}
 				}
 			}
 		}
 	}
+
+
 
 	public void LoseGame() {
 		ChessPlayer[] chessPlayers = GameObject.FindObjectsOfType<ChessPlayer>();
@@ -165,7 +185,16 @@ public class ChessPlayer : MonoBehaviourPunCallbacks {
 		gameUI.SetEndText(text);
 	}
 
-	public void KillPiece(GameObject go) => PhotonNetwork.Destroy(go);
+	public void KillPiece(GameObject go) {
+		Piece currPiece = go.GetComponent<Piece>();
+		Collider2D[] colliders = Physics2D.OverlapCircleAll(currPiece.GetStartPos(), 0.1f);
+		if (GameConfiguration.Instance.GetRule(GameConfiguration.HeroesNeverDie) && currPiece.GetName() != GameConfiguration.KING && colliders.Length <= 1) {
+			// Piece p = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Piece"), go.GetComponent<Piece>().GetStartPos(), Quaternion.identity).GetComponent<Piece>();
+			go.transform.position = currPiece.GetStartPos();
+		} else {
+			PhotonNetwork.Destroy(go);
+		}
+	}
 
 	public void SetPiecesActive(bool b) {
 		foreach (Piece p in myPieces) { p.SetIsActive(b); } // Setting all of the pieces to desired active state

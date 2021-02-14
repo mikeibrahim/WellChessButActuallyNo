@@ -24,7 +24,8 @@ public class Piece : MonoBehaviour {
 	PhotonView PV;
 	Board board;
 	GameConfiguration gc;
-	
+	Vector3 startPos;
+
 	ChessPlayer player;
 	int pieceName; //  name of piece
 	bool infiniteMove; // can move one direction infinite
@@ -34,6 +35,8 @@ public class Piece : MonoBehaviour {
 	List<Vector2> attackVectors = new List<Vector2>(); // how the piece attacks
 
 	bool isActivated;
+	bool isWhite;
+	bool nigerundayo;
 
 	private void Awake() {
 		PV = GetComponent<PhotonView>();
@@ -53,6 +56,7 @@ public class Piece : MonoBehaviour {
 
 	private void Start() {
 		transform.SetParent(GameObject.FindObjectOfType<Canvas>().transform); // Sets the parent to the World canvas
+		startPos = transform.position;
 	}
 
 	public void SetUpPiece(ChessPlayer player, pieceType type) {
@@ -62,18 +66,26 @@ public class Piece : MonoBehaviour {
 		infiniteMove = type.moveStyles.Item1;
 		anyMove = type.moveStyles.Item2;
 		ghostMove = type.moveStyles.Item3;
+		SetMoveAttackVectors(type);
+		SetSprite(pieceName);
+	}
+
+	private void SetMoveAttackVectors(pieceType type) {
+		moveVectors.Clear();
+		attackVectors.Clear();
 		foreach ((int, int) mv in type.moveVectors.Item1) {
+			print("One of the move vectors: " + mv);
 			moveVectors.Add(new Vector2(mv.Item1, mv.Item2));
 		}
+
 		foreach ((int ,int) av in type.moveVectors.Item2) {
+			print("One of the Attacl vectors: " + av);
 			if (av == (0, 0)) {
 				attackVectors = moveVectors;
 			} else {
 				attackVectors.Add(new Vector2(av.Item1, av.Item2));
 			}
 		}
-
-		SetSprite(pieceName);
 	}
 
 	public void OnClick() {
@@ -87,8 +99,21 @@ public class Piece : MonoBehaviour {
 		if (b) { // if the piece is already active
 			board.ResetTileColors(); // then reset everything
 		} else {
+			if (nigerundayo) {
+				// SetMoveAttackVectors(GameConfiguration.Instance.pieces[GameConfiguration.QUEEN]);
+				// print("Set Nigerundayo moves");
+				infiniteMove = true;
+			} else if (pieceName == GameConfiguration.KING) {
+				infiniteMove = false;
+				// print("Reverted back");
+				// SetMoveAttackVectors(GameConfiguration.Instance.pieces[pieceName]);
+			}
+
 			foreach (Vector2 v in moveVectors) {
 				board.ShowPossibleMoves(GetPossibleMoves(v)); // show where you can go
+				if (pieceName == GameConfiguration.PAWN && transform.position == startPos){ // pawn first move is doubled
+					board.ShowPossibleMoves(GetPossibleMoves(v * 2));
+				}
 			}
 			foreach (Vector2 v in attackVectors) {
 				board.ShowPossibleAttacks(GetPossibleMoves(v)); // show where you can go
@@ -166,28 +191,51 @@ public class Piece : MonoBehaviour {
 		player.KillPiece(this.gameObject);
 	}
 
-	public bool GetIsMine() {
-		return PV.IsMine;
-	}
-
-	public List<Vector2> GetAttackVectors() {
-		return attackVectors;
-	}
-
-	public int GetName() {
-		return pieceName;
-	}
-
-
-	public void SetSprite(int index) {
-		PV.RPC("RPC_SetSprite", RpcTarget.All, index);
+	public void Nigerundayo() {
+		PV.RPC("RPC_Nigerundayo", RpcTarget.All);
 	}
 
 	[PunRPC]
-	private void RPC_SetSprite(int index) {
+	public void RPC_Nigerundayo() {
+		if (!PV.IsMine) {  return;  }
+		nigerundayo = true;
+	}
+
+	public void SetNigerundayo(bool b) {
+		nigerundayo = b;
+	}
+
+	public bool GetIsMine() => PV.IsMine;
+
+	public Vector3 GetStartPos() => startPos;
+
+	public List<Vector2> GetAttackVectors() => attackVectors;
+
+	public int GetName() => pieceName;
+
+
+	public void SetSprite(int index) {
+		isWhite = (PhotonNetwork.IsMasterClient && PV.IsMine) || (!PhotonNetwork.IsMasterClient && !PV.IsMine);
+
+		PV.RPC("RPC_SetSprite", RpcTarget.All, index, isWhite);
+
+		if (GameConfiguration.Instance.GetRule(GameConfiguration.Gecko)) {
+			spriteRenderer.sprite = Thumbnail.Instance.GetGeckoThumbnail(index);
+		}
+
+		if (GameConfiguration.Instance.GetRule(GameConfiguration.Jack)) {
+			spriteRenderer.sprite = Thumbnail.Instance.GetJackThumbnail(index);
+		}
+
+	}
+
+	[PunRPC]
+	private void RPC_SetSprite(int index, bool b) {
 		// print("Set up the sprite with: " + index);
-		bool isWhite = (PhotonNetwork.IsMasterClient && PV.IsMine) || (!PhotonNetwork.IsMasterClient && !PV.IsMine);
-		spriteRenderer.sprite = isWhite ? Thumbnail.Instance.GetWhiteThumbnail(index) : Thumbnail.Instance.GetBlackThumbnail(index);
+		spriteRenderer.sprite = b ? Thumbnail.Instance.GetWhiteThumbnail(index) : Thumbnail.Instance.GetBlackThumbnail(index);
+
 		pieceName = index;
 	}
+
+	public bool GetIsWhite() => isWhite;
 }
